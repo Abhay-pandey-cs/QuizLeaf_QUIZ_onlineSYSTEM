@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate, us
 import { LogOut, Plus, Clock, CheckCircle, ChevronRight, BookOpen, Trash2 } from "lucide-react";
 
 // Use environment variable for the API base URL in production
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://quizleaf-quiz-onlinesystem.onrender.com/api";
 
 function App() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
