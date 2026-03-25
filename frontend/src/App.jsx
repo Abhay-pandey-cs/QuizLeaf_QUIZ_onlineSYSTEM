@@ -63,16 +63,28 @@ function Login({ onLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`${API_BASE}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-    if (data.token) {
-      onLogin(data.user, data.token);
-      navigate("/");
-    } else alert(data.error || "Login failed");
+    console.log(`Attempting login to: ${API_BASE}/login`);
+    try {
+      const res = await fetch(`${API_BASE}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      console.log("Login Response Status:", res.status);
+      const data = await res.json();
+      console.log("Login Response Data:", data);
+
+      if (data.token) {
+        onLogin(data.user, data.token);
+        navigate("/");
+      } else {
+        alert(data.error || "Login failed");
+      }
+    } catch (err) {
+      console.error("Login Error:", err);
+      alert("Network error or server is down. Check console for details.");
+    }
   };
 
   return (
@@ -96,15 +108,27 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`${API_BASE}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, role }),
-    });
-    if (res.ok) {
-      alert("Registration successful! Please login.");
-      navigate("/login");
-    } else alert("Error registering");
+    console.log(`Attempting registration to: ${API_BASE}/register`);
+    try {
+      const res = await fetch(`${API_BASE}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+      
+      console.log("Register Response Status:", res.status);
+      if (res.ok) {
+        alert("Registration successful! Please login.");
+        navigate("/login");
+      } else {
+        const data = await res.json();
+        console.log("Register Response Data:", data);
+        alert(data.error || "Error registering");
+      }
+    } catch (err) {
+      console.error("Register Error:", err);
+      alert("Network error or server is down. Check console for details.");
+    }
   };
 
   return (
