@@ -428,9 +428,10 @@ function ParticipantDashboard({ token }) {
                 {quizzes.map(q => (
                 <div key={q.id} className="quiz-card">
                     <div className="quiz-info">
-                    <h3>{q.title}</h3>
-                    <p><Clock size={14} /> {q.time_limit} mins</p>
-                    </div>
+              <h3 style={{margin: 0}}>{q.title}</h3>
+              <p style={{fontSize: "0.8rem", color: "var(--text-light)", margin: "0.2rem 0"}}>By: {q.organiser_name}</p>
+              <p><Clock size={14} /> {q.time_limit} mins</p>
+            </div>
                     <Link to={`/quiz/${q.id}`} className="btn-take">Take Quiz <ChevronRight size={16} /></Link>
                 </div>
                 ))}
@@ -534,7 +535,10 @@ function QuizPage({ token, user }) {
   return (
     <div className="quiz-interface">
       <div className="quiz-header">
-        <h2>{quiz.title}</h2>
+        <div>
+           <h2 style={{margin: 0}}>{quiz.title}</h2>
+           <p style={{fontSize: "0.8rem", color: "var(--text-light)"}}>Organised by: <strong>{quiz.organiser_name}</strong></p>
+        </div>
         <div className="timer"><Clock size={16} /> {formatTime(timeLeft)}</div>
       </div>
 

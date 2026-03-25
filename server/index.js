@@ -120,10 +120,25 @@ app.post('/api/quizzes/:id/questions', auth, (req, res) => {
     });
 });
 
-// Get all quizzes
+// Get quizzes
 app.get('/api/quizzes', auth, (req, res) => {
-    const sql = 'SELECT * FROM quizzes';
-    db.query(sql, (err, results) => {
+    let sql;
+    let params = [];
+    
+    if (req.user.role === 'organiser') {
+        // Organisers only see their own quizzes
+        sql = 'SELECT * FROM quizzes WHERE created_by = ?';
+        params = [req.user.id];
+    } else {
+        // Participants see all quizzes + the organiser's name
+        sql = `
+            SELECT q.*, u.name as organiser_name 
+            FROM quizzes q 
+            JOIN users u ON q.created_by = u.id
+        `;
+    }
+
+    db.query(sql, params, (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(results);
     });
@@ -133,10 +148,11 @@ app.get('/api/quizzes', auth, (req, res) => {
 app.get('/api/quizzes/:id', auth, (req, res) => {
     const quiz_id = req.params.id;
     const sql = `
-        SELECT q.id as quiz_id, q.title, q.time_limit, 
+        SELECT q.id as quiz_id, q.title, q.time_limit, u.name as organiser_name,
                qn.id as question_id, qn.question_text,
                o.id as option_id, o.option_text, o.is_correct
         FROM quizzes q
+        JOIN users u ON q.created_by = u.id
         LEFT JOIN questions qn ON q.id = qn.quiz_id
         LEFT JOIN options o ON qn.id = o.question_id
         WHERE q.id = ?
@@ -149,6 +165,7 @@ app.get('/api/quizzes/:id', auth, (req, res) => {
             id: results[0].quiz_id,
             title: results[0].title,
             time_limit: results[0].time_limit,
+            organiser_name: results[0].organiser_name,
             questions: []
         };
 
